@@ -16,3 +16,66 @@ several of them using the Restructured Text markup notation.
 Please read the Documentation/process/changes.rst file, as it contains the
 requirements for building and running the kernel, and information about
 the problems which may result by upgrading your kernel.
+
+
+# 283-assignment2
+Q1: For each member in your team, provide 1 paragraph detailing what parts of the lab that member
+implemented / researched.
+
+- This assignment is implemented by 2 members:
+  -- Prajakta Joshi
+  -- Umashankar Kumar
+- Activities By Prajakta Joshi
+  -- Done the setup required for the assignment
+  -- Implemented code to count number of Exits
+  -- Created Readme file explaining all the detailed teps
+- Activities By Umashankar Kumar
+  -- Done the setup required for the assignment
+  -- Implemented code to find out the total time spent processing all exit
+  -- Researched on cpuid commands for testing the code changes in inner VM
+- Both the team members worked together for the setup issues
+- While integration, both of the team members worked together by setting up the zoom call
+- Code has been developed by both of the team members together and committed by Umashankar onto the GitHub Repo
+
+
+Q2: Describe in detail the steps you used to complete the assignment.
+
+As part of assignment, the steps executed are as follows:
+- Create fork branch of torvalds / linux
+- On the VMWare Terminal, get the clone of the forked branch created above
+- Go Inside linux folder
+- Execute following commands:
+-- sudo bash
+-- apt-get install build-essential kernel-package fakeroot libncurses5-dev libssl-dev ccache bison flex libelf-dev
+-- uname -a  ---// Note down the kernel version e.g. 5.4.0-52-generic
+-- cp /boot/config-5.4.0-52-generic    ./.config  ---// Substitute the version as you obtained
+- make oldconfig
+- make && make modules && make install && make modules_install 
+- reboot
+-- If you face problems after reboot, execute following commands
+-- reboot -f
+-- Select advance option
+-- Select the newly added kernel version
+-- You will be able to login after above implementation
+-- Open terminal and goto linux folder
+-- sudo bash
+-- nproc
+-- sudo make -j 1 && sudo make modules_install -j 1 && sudo make install -j 1  // If the output of nproc is 2, replace all 1's with 2
+-- update-grub 
+-- reboot
+- sudo apt-get install qemu-kvm libvirt-bin bridge-utils virt-manager
+- sudo apt-get install virt-manager
+- Now Create inner VM using virt manager application
+- Give 2 CPU and 3000MB space to inner VM
+- Once inner VM is created install cpuid for quick testing
+- sudo apt install cpuid
+- On the outer VM, make following changes:
+-- Go to linux/include/linux/kvm_host.h and declare the struct for vcpu
+-- Go to linux/arch/x86/kvm/vmx/vmx.c and make required changes into vmx_handle_exit function
+-- Go to linux/arch/x86/kvm/cpuid.c and make required changes into kvm_emulate_cpuid function
+-- Save all the files
+- make && make modules && make install && make modules_install
+- reboot
+- Goto Inner VM and execute command as cpuid -l 0x4FFFFFFF // This will give updated register values of eax, ebx, ecx, edx
+- Go to Outer VM Terminal and execute dmesg, you will see the logs with exit count and cycles
+- Commit and Push the changes to the Git Repo
