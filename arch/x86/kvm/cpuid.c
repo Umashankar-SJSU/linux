@@ -1115,7 +1115,7 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 		eax = total_exits;
 		ebx = (u32)((vcpu->exit_counter.total_no_of_cycles & 0xFFFFFFFF00000000LL) >> 32);
 		ecx = (u32)(vcpu->exit_counter.total_no_of_cycles & 0xFFFFFFFFLL);
-		printk(KERN_INFO " total number of exits: %u, total number of cycles: %llu", vcpu->vcpu->exit_counter.total_no_of_exits, vcpu->exit_counter.total_no_of_cycles);
+		printk(KERN_INFO " total number of exits: %u, total number of cycles: %llu", vcpu->exit_counter.total_no_of_exits, vcpu->exit_counter.total_no_of_cycles);
 	}
 	else
 	{
