@@ -5972,7 +5972,7 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 		{
 		int ret = handle_invalid_guest_state(vcpu);
 		exit_end_time = rdtsc();
-		vcpu->exit_counter.total_cycle_count = vcpu->exit_counter.total_no_of_cycles + exit_end_time - exit_start_time;
+		vcpu->exit_counter.total_no_of_cycles= vcpu->exit_counter.total_no_of_cycles + exit_end_time - exit_start_time;
 		return ret;
 	    }
 
@@ -5990,7 +5990,7 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 		 */
 		nested_mark_vmcs12_pages_dirty(vcpu);
 		exit_end_time = rdtsc();
-		vcpu->exit_counter.total_cycle_count = vcpu->exit_counter.total_no_of_cycles + exit_end_time - exit_start_time;
+		vcpu->exit_counter.total_no_of_cycles= vcpu->exit_counter.total_no_of_cycles + exit_end_time - exit_start_time;
 		
 		if (nested_vmx_reflect_vmexit(vcpu))
 			return 1;
@@ -6004,7 +6004,7 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 
 		vcpu->run->fail_entry.cpu = vcpu->arch.last_vmentry_cpu;
 		exit_end_time = rdtsc();
-		vcpu->exit_counter.total_cycle_count = vcpu->exit_counter.total_no_of_cycles + exit_end_time - exit_start_time;
+		vcpu->exit_counter.total_no_of_cycles= vcpu->exit_counter.total_no_of_cycles + exit_end_time - exit_start_time;
 		return 0;
 	}
 
@@ -6015,7 +6015,7 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 			= vmcs_read32(VM_INSTRUCTION_ERROR);
 		vcpu->run->fail_entry.cpu = vcpu->arch.last_vmentry_cpu;
 		exit_end_time = rdtsc();
-		vcpu->exit_counter.total_cycle_count = vcpu->exit_counter.total_no_of_cycles + exit_end_time - exit_start_time;
+		vcpu->exit_counter.total_no_of_cycles= vcpu->exit_counter.total_no_of_cycles + exit_end_time - exit_start_time;
 		return 0;
 	}
 
@@ -6046,7 +6046,7 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 		vcpu->run->internal.data[vcpu->run->internal.ndata++] =
 			vcpu->arch.last_vmentry_cpu;
 		exit_end_time = rdtsc();
-		vcpu->exit_counter.total_cycle_count = vcpu->exit_counter.total_no_of_cycles + exit_end_time - exit_start_time;
+		vcpu->exit_counter.total_no_of_cycles= vcpu->exit_counter.total_no_of_cycles + exit_end_time - exit_start_time;
 		return 0;
 	}
 
@@ -6096,8 +6096,7 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 
        
 	exit_end_time = rdtsc();
-	vcpu->exit_counter.total_cycle_count = vcpu->exit_counter.total_no_of_cycles + exit_end_time - exit_start_time;
-	
+	vcpu->exit_counter.total_no_of_cycles= vcpu->exit_counter.total_no_of_cycles + exit_end_time - exit_start_time;
 	return  kvm_vmx_exit_handlers[exit_reason](vcpu);
 
 unexpected_vmexit:
@@ -6110,7 +6109,7 @@ unexpected_vmexit:
 	vcpu->run->internal.data[0] = exit_reason;
 	vcpu->run->internal.data[1] = vcpu->arch.last_vmentry_cpu;
 	exit_end_time = rdtsc();
-	vcpu->exit_counter.total_cycle_count = vcpu->exit_counter.total_no_of_cycles + exit_end_time - exit_start_time;
+	vcpu->exit_counter.total_no_of_cycles= vcpu->exit_counter.total_no_of_cycles + exit_end_time - exit_start_time;
 	return 0;
 }
 
