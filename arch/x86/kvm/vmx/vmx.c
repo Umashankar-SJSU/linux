@@ -66,8 +66,6 @@
 MODULE_AUTHOR("Qumranet");
 MODULE_LICENSE("GPL");
 
-u32 total_exits=0;
-
 #ifdef MODULE
 static const struct x86_cpu_id vmx_cpu_id[] = {
 	X86_MATCH_FEATURE(X86_FEATURE_VMX, NULL),
@@ -5942,7 +5940,7 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 	
 	u64 exit_start_time = 0;
         u64 exit_end_time = 0;
-        total_exits = vcpu->exit_counter.total_no_of_exits;
+        u32 total_exits = vcpu->exit_counter.total_no_of_exits;
         total_exits++;
         vcpu->exit_counter.total_no_of_exits = total_exits;
 
@@ -6067,34 +6065,64 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 			       __func__, vcpu->vcpu_id);
 			vmx->loaded_vmcs->soft_vnmi_blocked = 0;
 		}
+		exit_end_time = rdtsc();
+		vcpu->exit_counter.total_no_of_cycles= vcpu->exit_counter.total_no_of_cycles + exit_end_time - exit_start_time;
 	}
 
 	if (exit_fastpath != EXIT_FASTPATH_NONE)
+	{
+		exit_end_time = rdtsc();
+		vcpu->exit_counter.total_no_of_cycles= vcpu->exit_counter.total_no_of_cycles + exit_end_time - exit_start_time;
 		return 1;
+	}
 
-	if (exit_reason >= kvm_vmx_max_exit_handlers)
+	if (exit_reason >= kvm_vmx_max_exit_handlers) {
+		exit_end_time = rdtsc();
+		vcpu->exit_counter.total_no_of_cycles= vcpu->exit_counter.total_no_of_cycles + exit_end_time - exit_start_time;
 		goto unexpected_vmexit;
+	}
 #ifdef CONFIG_RETPOLINE
-	if (exit_reason == EXIT_REASON_MSR_WRITE)
+	if (exit_reason == EXIT_REASON_MSR_WRITE) {
+		exit_end_time = rdtsc();
+		vcpu->exit_counter.total_no_of_cycles= vcpu->exit_counter.total_no_of_cycles + exit_end_time - exit_start_time;
 		return kvm_emulate_wrmsr(vcpu);
-	else if (exit_reason == EXIT_REASON_PREEMPTION_TIMER)
+	}
+	else if (exit_reason == EXIT_REASON_PREEMPTION_TIMER) {
+		exit_end_time = rdtsc();
+		vcpu->exit_counter.total_no_of_cycles= vcpu->exit_counter.total_no_of_cycles + exit_end_time - exit_start_time;
 		return handle_preemption_timer(vcpu);
-	else if (exit_reason == EXIT_REASON_INTERRUPT_WINDOW)
+	}
+	else if (exit_reason == EXIT_REASON_INTERRUPT_WINDOW) {
+		exit_end_time = rdtsc();
+		vcpu->exit_counter.total_no_of_cycles= vcpu->exit_counter.total_no_of_cycles + exit_end_time - exit_start_time;		
 		return handle_interrupt_window(vcpu);
-	else if (exit_reason == EXIT_REASON_EXTERNAL_INTERRUPT)
+	}
+	else if (exit_reason == EXIT_REASON_EXTERNAL_INTERRUPT) {
+		exit_end_time = rdtsc();
+		vcpu->exit_counter.total_no_of_cycles= vcpu->exit_counter.total_no_of_cycles + exit_end_time - exit_start_time;
 		return handle_external_interrupt(vcpu);
-	else if (exit_reason == EXIT_REASON_HLT)
+	}	
+	else if (exit_reason == EXIT_REASON_HLT) {
+		exit_end_time = rdtsc();
+		vcpu->exit_counter.total_no_of_cycles= vcpu->exit_counter.total_no_of_cycles + exit_end_time - exit_start_time;	
 		return kvm_emulate_halt(vcpu);
-	else if (exit_reason == EXIT_REASON_EPT_MISCONFIG)
+	}
+	else if (exit_reason == EXIT_REASON_EPT_MISCONFIG) {
+		exit_end_time = rdtsc();
+		vcpu->exit_counter.total_no_of_cycles= vcpu->exit_counter.total_no_of_cycles + exit_end_time - exit_start_time;
 		return handle_ept_misconfig(vcpu);
+	}
+		
 #endif
 
 	exit_reason = array_index_nospec(exit_reason,
 					 kvm_vmx_max_exit_handlers);
-	if (!kvm_vmx_exit_handlers[exit_reason])
+	if (!kvm_vmx_exit_handlers[exit_reason]) {
+		exit_end_time = rdtsc();
+		vcpu->exit_counter.total_no_of_cycles= vcpu->exit_counter.total_no_of_cycles + exit_end_time - exit_start_time;
 		goto unexpected_vmexit;
-
-       
+	}
+	
 	exit_end_time = rdtsc();
 	vcpu->exit_counter.total_no_of_cycles= vcpu->exit_counter.total_no_of_cycles + exit_end_time - exit_start_time;
 	return  kvm_vmx_exit_handlers[exit_reason](vcpu);

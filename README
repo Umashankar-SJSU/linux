@@ -79,3 +79,34 @@ As part of assignment, the steps executed are as follows:
 - Goto Inner VM and execute command as cpuid -l 0x4FFFFFFF // This will give updated register values of eax, ebx, ecx, edx
 - Go to Outer VM Terminal and execute dmesg, you will see the logs with exit count and cycles
 - Commit and Push the changes to the Git Repo
+
+
+Q3: Comment on the frequency of exits – does the number of exits increase at a stable rate? Or are there more exits performed during certain VM operations? Approximately how many exits does a full VM boot entail?
+Find below the observation:
+[  122.281317]  total number of exits CPU0: 486892, total number of cycles: 13820529
+[  122.281568]  total number of exits CPU1: 305823, total number of cycles: 10413782
+
+[  318.926948]  total number of exits CPU0: 513998, total number of cycles: 16907289
+[  318.927307]  total number of exits CPU1: 327909, total number of cycles: 12937032
+
+[  423.375499]  total number of exits CPU0: 524251, total number of cycles: 18633435
+[  423.375887]  total number of exits CPU1: 335247, total number of cycles: 14044814
+
+Register Information Observation:
+CPU 0:
+   0x4fffffff 0x00: eax=0x00076dec ebx=0x00000000 ecx=0x00d2e271 edx=0xffff99ab
+CPU 1:
+   0x4fffffff 0x00: eax=0x0004aa9f ebx=0x00000000 ecx=0x009ee6d6 edx=0xffff99ab
+
+CPU 0:
+   0x4fffffff 0x00: eax=0x0007d7ce ebx=0x00000000 ecx=0x0101fc19 edx=0xffff99ab
+CPU 1:
+   0x4fffffff 0x00: eax=0x000500e5 ebx=0x00000000 ecx=0x00c56748 edx=0xffff99ab
+
+CPU 0:
+   0x4fffffff 0x00: eax=0x0007ffdb ebx=0x00000000 ecx=0x011c52db edx=0xffff99ab
+CPU 1:
+   0x4fffffff 0x00: eax=0x00051d8f ebx=0x00000000 ecx=0x00d64e8e edx=0xffff99ab
+
+It is observed that exits are increasing at a stable rate. 
+Total Exits with VM boot, for CPU0: 486892, CPU1: 305823
